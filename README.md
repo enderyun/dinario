@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# Dinario
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Dinario** será una aplicación Web Progresiva (PWA) de código abierto para la gestión financiera personal, diseñada con un enfoque absoluto en la **privacidad**. Permite a los usuarios configurar sus ingresos, calcular impuestos automáticamente y rastrear sus gastos fijos y deudas, todo desde una interfaz moderna y rápida.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Características Principales
 
-## React Compiler
+- **100% Privado & Local**: Sin bases de datos externas ni servidores. Tus datos nunca salen de tu navegador.
+- **Funciona Offline**: Gracias a la tecnología PWA, puedes gestionar tus finanzas sin conexión a internet.
+- **Ingresos Flexibles**:
+  - **Mensual**: Configura un salario fijo recurrente.
+  - **Diario**: Registra ingresos variables día a día y visualiza tu acumulado mensual.
+- **Impuestos Configurables**: Define tu propia tasa de impuestos (%) para calcular tu ingreso neto real.
+- **Gestión de Deudas**: Registra gastos fijos y deudas con fechas de pago para tener claridad sobre tus compromisos.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Stack Tecnológico
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Core
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **[Vite](https://vitejs.dev/)**: Build tool ultrarrápido para desarrollo moderno.
+- **[React](https://react.dev/)**: Biblioteca para construir interfaces de usuario declarativas.
+- **[TypeScript](https://www.typescriptlang.org/)**: JavaScript con tipado estático para un código más robusto y mantenible.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Estilos & UI
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **[Tailwind CSS (v4)](https://tailwindcss.com/)**: Framework de utilidades para un diseño rápido, responsive y moderno.
+- **[Lucide React](https://lucide.dev/)**: Set de iconos limpio y consistente.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Datos & Estado
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **[Dexie.js](https://dexie.org/)**: Wrapper minimalista para IndexedDB que permite una persistencia local potente y fácil de usar.
+- **React Router**: Enrutamiento SPA (Single Page Application) para una navegación fluida entre vistas.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### PWA
+
+- **[vite-plugin-pwa](https://vite-pwa-org.netlify.app/)**: Conversión automática a PWA (Service Workers, Manifest, Instalación).
+
+---
+
+## 🚀 Instalación y Uso
+
+1.  **Clonar el repositorio**:
+
+    ```bash
+    git clone https://github.com/enderyun/dinario.git
+    cd dinario
+    ```
+
+2.  **Instalar dependencias**:
+
+    ```bash
+    pnpm install
+    ```
+
+3.  **Iniciar servidor de desarrollo**:
+
+    ```bash
+    pnpm dev
+    ```
+
+    Abre `http://localhost:5173` en tu navegador.
+
+4.  **Construir para producción**:
+    ```bash
+    pnpm build
+    ```
+    Esto generará los archivos optimizados en la carpeta `dist`.
+
+

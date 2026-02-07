@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router';
 
-function App() {
-  const [count, setCount] = useState(0)
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 
+// ============================================
+// LAZY LOADING DE PÁGINAS
+// ============================================
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const AddTransactionPage = lazy(() => import('./pages/AddTransactionPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+
+// ============================================
+// COMPONENTE DE CARGA
+// ============================================
+
+function LoadingSpinner() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+    </div>
+  );
 }
 
-export default App
+// ============================================
+// COMPONENTE PRINCIPAL
+// ============================================
+
+function App() {
+  return (
+    <>
+      <Header />
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/add" element={<AddTransactionPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      <Footer />
+    </>
+  );
+}
+
+export default App;

@@ -55,14 +55,14 @@ export function DebtForm({ onAgregar }: DebtFormProps) {
           htmlFor="debt-name" 
           className="block mb-2 text-sm font-medium text-gray-600"
         >
-          Debt Name
+          Nombre de la deuda
         </label>
         <input
           id="debt-name"
           type="text"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          placeholder="e.g., Credit Card"
+          placeholder="e.g., Tarjeta de credito"
           className="input-field"
         />
       </div>
@@ -74,7 +74,7 @@ export function DebtForm({ onAgregar }: DebtFormProps) {
             htmlFor="debt-amount" 
             className="block mb-2 text-sm font-medium text-gray-600"
           >
-            Monthly Amount
+            Monto mensual
           </label>
           <input
             id="debt-amount"
@@ -93,7 +93,7 @@ export function DebtForm({ onAgregar }: DebtFormProps) {
             htmlFor="debt-day" 
             className="block mb-2 text-sm font-medium text-gray-600"
           >
-            Payment Day
+            Dia de pago
           </label>
           <input
             id="debt-day"
@@ -114,7 +114,7 @@ export function DebtForm({ onAgregar }: DebtFormProps) {
         className="btn-primary w-full flex items-center justify-center gap-2"
       >
         <Plus className="h-5 w-5" />
-        Add Debt
+        Agregar deuda
       </button>
     </form>
   );

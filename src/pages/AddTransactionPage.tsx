@@ -21,7 +21,7 @@ function AddTransactionPage() {
   const [activeTab, setActiveTab] = useState<'income' | 'debt'>('income');
 
   // Si el ingreso es mensual, no se pueden agregar ingresos diarios,
-  // así que forzamos la tab de deuda si 'income' estaba seleccionado.
+  // así que forzamos la tab de deuda si 'income' estaba seleccionado
   const showIncomeTab = tipoIngreso === 'diario';
   const currentTab = showIncomeTab ? activeTab : 'debt';
 
@@ -35,7 +35,7 @@ function AddTransactionPage() {
           >
             <ArrowLeft className="h-6 w-6 text-gray-600" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-800">Add Transaction</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Agregar transacción</h1>
         </div>
 
         {/* Tabs */}
@@ -52,7 +52,7 @@ function AddTransactionPage() {
               `}
             >
               <DollarSign className="h-4 w-4" />
-              Daily Income
+              Ingreso diario
             </button>
             <button
               onClick={() => setActiveTab('debt')}
@@ -65,7 +65,7 @@ function AddTransactionPage() {
               `}
             >
               <CreditCard className="h-4 w-4" />
-              Debt / Expense
+              Deuda / Gasto
             </button>
           </div>
         )}
@@ -77,10 +77,10 @@ function AddTransactionPage() {
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                   <DollarSign className="h-6 w-6 text-emerald-500" />
-                  Add Daily Income
+                  Ingreso diario
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  Record your earnings for today.
+                  Registra tus ingresos de hoy.
                 </p>
               </div>
               <DailyIncomeForm
@@ -94,10 +94,10 @@ function AddTransactionPage() {
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                   <CreditCard className="h-6 w-6 text-red-500" />
-                  Add Debt
+                  Deuda / Gasto
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  Add a new recurring debt or expense.
+                  Agrega una nueva deuda o gasto recurrente.
                 </p>
               </div>
               <DebtForm onAgregar={agregarDeuda} />

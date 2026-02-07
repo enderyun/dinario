@@ -47,7 +47,7 @@ function SettingsForm({ initialConfig, onSave }: SettingsFormProps) {
       {/* Tipo de ingreso */}
       <div>
         <label className="block mb-3 text-sm font-medium text-gray-600">
-          Income Type
+          Tipo de ingreso
         </label>
         <div className="grid grid-cols-2 gap-4">
           <button
@@ -61,8 +61,8 @@ function SettingsForm({ initialConfig, onSave }: SettingsFormProps) {
             `}
           >
             <DollarSign className="h-6 w-6 mx-auto mb-2" />
-            <p className="font-medium">Monthly</p>
-            <p className="text-xs opacity-70">Fixed salary</p>
+            <p className="font-medium">Mensual</p>
+            <p className="text-xs opacity-70">Salario fijo</p>
           </button>
           
           <button
@@ -76,8 +76,8 @@ function SettingsForm({ initialConfig, onSave }: SettingsFormProps) {
             `}
           >
             <DollarSign className="h-6 w-6 mx-auto mb-2" />
-            <p className="font-medium">Daily</p>
-            <p className="text-xs opacity-70">Variable income</p>
+            <p className="font-medium">Diario</p>
+            <p className="text-xs opacity-70">Ingreso variable</p>
           </button>
         </div>
       </div>
@@ -89,7 +89,7 @@ function SettingsForm({ initialConfig, onSave }: SettingsFormProps) {
             htmlFor="salary" 
             className="block mb-2 text-sm font-medium text-gray-600"
           >
-            Monthly Salary (Gross)
+            Salario mensual (bruto)
           </label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -113,7 +113,7 @@ function SettingsForm({ initialConfig, onSave }: SettingsFormProps) {
           htmlFor="tax-rate" 
           className="block mb-2 text-sm font-medium text-gray-600"
         >
-          Tax Rate
+          Tasa de impuestos
         </label>
         <div className="relative">
           <input
@@ -132,7 +132,7 @@ function SettingsForm({ initialConfig, onSave }: SettingsFormProps) {
           </span>
         </div>
         <p className="mt-1 text-xs text-gray-400">
-          This percentage will be deducted from your gross income
+          Este porcentaje se deducirá de tu ingreso bruto
         </p>
       </div>
 
@@ -143,10 +143,10 @@ function SettingsForm({ initialConfig, onSave }: SettingsFormProps) {
         {guardado ? (
           <>
             <Check className="h-5 w-5" />
-            Saved!
+            Guardado
           </>
         ) : (
-          'Save Settings'
+          'Guardar configuración'
         )}
       </button>
     </form>
@@ -193,7 +193,7 @@ function SettingsPage() {
         <section className="rounded-2xl bg-white p-6 shadow-md mb-6">
           <h2 className="mb-6 flex items-center gap-2 text-xl font-semibold text-gray-800">
             <Settings className="h-5 w-5 text-emerald-500" />
-            Income Settings
+            Configuración de ingresos
           </h2>
           
           <SettingsForm 
@@ -207,11 +207,11 @@ function SettingsPage() {
         <section className="rounded-2xl bg-white p-6 shadow-md border-2 border-red-100">
           <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-red-600">
             <Trash2 className="h-5 w-5" />
-            Danger Zone
+            Zona de peligro
           </h2>
           <p className="text-sm text-gray-500 mb-4">
-            This action will delete all your data including settings, income, and debts. 
-            This cannot be undone.
+            Esta acción eliminará todos tus datos, incluyendo configuración, ingresos y deudas. 
+            No se puede deshacer.
           </p>
           <button
             type="button"
@@ -223,7 +223,7 @@ function SettingsPage() {
                 : 'bg-red-100 text-red-600 hover:bg-red-200'}
             `}
           >
-            {confirmReset ? 'Click again to confirm' : 'Reset All Data'}
+            {confirmReset ? 'Haga clic de nuevo para confirmar' : 'Eliminar todos los datos'}
           </button>
         </section>
       </div>

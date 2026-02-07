@@ -39,17 +39,17 @@ export function Header() {
           
           {/* Navegación */}
           <nav className="flex items-center gap-1 sm:gap-2">
-            <Link to="/" className={linkClasses('/')}>
+            <Link to="/" className={linkClasses('/')}> {/* HomePage */}
               <Home className="h-5 w-5 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Inicio</span>
             </Link>
 
-            <Link to="/add" className={linkClasses('/add')}>
+            <Link to="/add" className={linkClasses('/add')}> {/* AddTransactionPage */}
               <PlusCircle className="h-5 w-5 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Agregar</span>
             </Link>
             
-            <Link to="/settings" className={linkClasses('/settings')}>
+            <Link to="/settings" className={linkClasses('/settings')}> {/* SettingsPage */}
               <Settings className="h-5 w-5 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Configuración</span>
             </Link>

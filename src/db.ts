@@ -30,7 +30,5 @@ export const db = new DinarioDB();
 export const DEFAULT_CONFIGURACION: Omit<Configuracion, 'id'> = {
   tipoIngreso: 'mensual',
   salarioMensual: 0,
-  tasaImpuestos: 0.00, // Esto hay que quitarlo, o buscar una manera de que el usuario sea 
-  // el que ingrese el porcentaje de impuestos que se le descuenta de su salario. Probablemente 
-  // se elimine porque la idea central es agregar los ingresos netos, no el bruto.
+  tasaImpuestos: 0.00, // El usuario lo configura a su gusto
 };

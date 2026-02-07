@@ -52,7 +52,7 @@ export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyInc
               htmlFor="income-amount" 
               className="block mb-2 text-sm font-medium text-gray-600"
             >
-              Amount
+              Monto
             </label>
             <input
               id="income-amount"
@@ -71,7 +71,7 @@ export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyInc
               htmlFor="income-date" 
               className="block mb-2 text-sm font-medium text-gray-600"
             >
-              Date
+              Fecha
             </label>
             <input
               id="income-date"
@@ -88,7 +88,7 @@ export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyInc
             htmlFor="income-description" 
             className="block mb-2 text-sm font-medium text-gray-600"
           >
-            Description (optional)
+            Descripción (opcional)
           </label>
           <input
             id="income-description"
@@ -105,7 +105,7 @@ export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyInc
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
           <Plus className="h-5 w-5" />
-          Add Income
+          Agregar ingreso
         </button>
       </form>
       
@@ -113,7 +113,7 @@ export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyInc
       {ingresosMes.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-600">This Month's Income</h4>
+            <h4 className="text-sm font-medium text-gray-600">Ingresos del mes</h4>
             <span className="text-sm font-bold text-emerald-600">
               Total: {formatCurrency(totalMes)}
             </span>

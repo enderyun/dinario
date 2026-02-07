@@ -17,8 +17,8 @@ export function DebtTable({ deudas, onEliminar }: DebtTableProps) {
     return (
       <div className="py-8 text-center text-gray-400">
         <CreditCard className="mx-auto mb-2 h-12 w-12 opacity-50" />
-        <p>No debts registered</p>
-        <p className="text-sm">Add one using the form!</p>
+        <p>No hay deudas registradas</p>
+        <p className="text-sm">Agrega una usando el formulario</p>
       </div>
     );
   }
@@ -29,9 +29,9 @@ export function DebtTable({ deudas, onEliminar }: DebtTableProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-100 text-left text-sm text-gray-500">
-            <th className="pb-3 font-medium">Name</th>
-            <th className="pb-3 font-medium">Amount</th>
-            <th className="pb-3 font-medium">Day</th>
+            <th className="pb-3 font-medium">Nombre</th>
+            <th className="pb-3 font-medium">Monto</th>
+            <th className="pb-3 font-medium">Dia</th>
             <th className="pb-3 font-medium"></th>
           </tr>
         </thead>
@@ -47,7 +47,7 @@ export function DebtTable({ deudas, onEliminar }: DebtTableProps) {
               <td className="py-3 text-gray-500">
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  Day {deuda.diaPago}
+                  Dia {deuda.diaPago}
                 </span>
               </td>
               <td className="py-3 text-right">

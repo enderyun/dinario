@@ -1,13 +1,13 @@
 # Dinario
 
-**Dinario** será una aplicación Web Progresiva (PWA) de código abierto para la gestión financiera personal, diseñada con un enfoque absoluto en la **privacidad**. Permite a los usuarios configurar sus ingresos, calcular impuestos automáticamente y rastrear sus gastos fijos y deudas, todo desde una interfaz moderna y rápida.
+**Dinario** es un proyecto personal que consiste en una aplicación Web Progresiva (PWA) para la gestión financiera personal, diseñada con un enfoque absoluto en la **privacidad**. Permite a los usuarios configurar sus ingresos, calcular impuestos automáticamente y rastrear sus gastos fijos y deudas, todo desde una interfaz moderna y rápida.
 
 ---
 
 ## Características Principales
 
-- **100% Privado & Local**: Sin bases de datos externas ni servidores. Tus datos nunca salen de tu navegador.
-- **Funciona Offline**: Gracias a la tecnología PWA, puedes gestionar tus finanzas sin conexión a internet.
+- **100% Privado & Local**: Sin bases de datos externas ni servidores.
+- **Funciona Offline**: Puedes gestionar tus finanzas sin conexión a internet.
 - **Ingresos Flexibles**:
   - **Mensual**: Configura un salario fijo recurrente.
   - **Diario**: Registra ingresos variables día a día y visualiza tu acumulado mensual.
@@ -16,7 +16,7 @@
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 ### Core
 
@@ -40,7 +40,7 @@
 
 ---
 
-## 🚀 Instalación y Uso
+## Instalación y Uso
 
 1.  **Clonar el repositorio**:
 

@@ -1,7 +1,9 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { Home, PlusCircle, Settings } from 'lucide-react';
 
 export function NavBar() {
+  const location = useLocation();
+  
   const isActive = (path: string): boolean => {
     return location.pathname === path;
   };

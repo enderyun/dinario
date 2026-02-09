@@ -1,25 +1,18 @@
-import { Shield } from 'lucide-react';
+import { NavBar } from "./NavBar";
 
 // ============================================
 // COMPONENTE FOOTER
 // ============================================
 
+
+
 export function Footer() {
+
+
   return (
-    <footer className="bg-white border-t border-gray-100 mt-auto">
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-          {/* Mensaje de privacidad */}
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-emerald-500" />
-            <span>Toda la información se almacena localmente</span>
-          </div>
-          
-          {/* Versión */}
-          <div>
-            <span>Dinario v0.1.1</span>
-          </div>
-        </div>
+    <footer className="fixed left-0 right-0 z-50 bottom-0 bg-white border-t border-gray-100 mt-auto md:hidden">
+      <div className="max-w-6xl mx-auto px-4 py-2">
+        <NavBar />
       </div>
     </footer>
   );

@@ -95,7 +95,7 @@ export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyInc
             type="text"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
-            placeholder="e.g., Freelance work"
+            placeholder="e.g., Uber, ventas, etc."
             className="input-field"
           />
         </div>

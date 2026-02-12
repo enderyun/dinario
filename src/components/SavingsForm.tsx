@@ -1,83 +1,86 @@
-import { useState } from 'react';
+import { useRef } from 'react';
+import type { SyntheticEvent } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import { formatCurrency, getTodayDate } from '../utils/formatCurrency';
-import type { IngresoDiario } from '../types';
+import type { Ahorro } from '../types';
 
 // ============================================
-// COMPONENTE FORMULARIO DE INGRESOS DIARIOS
+// COMPONENTE FORMULARIO DE AHORROS
 // ============================================
 
-interface DailyIncomeFormProps {
-  ingresosMes: IngresoDiario[];
-  onAgregar: (ingreso: Omit<IngresoDiario, 'id'>) => void;
+interface SavingsFormProps {
+  ahorros: Ahorro[]; // Historial completo o del mes
+  onAgregar: (ahorro: Omit<Ahorro, 'id'>) => void;
   onEliminar: (id: number) => void;
 }
 
-export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyIncomeFormProps) {
-  const [monto, setMonto] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [fecha, setFecha] = useState(getTodayDate());
+export function SavingsForm({ ahorros, onAgregar, onEliminar }: SavingsFormProps) {
+  const montoRef = useRef<HTMLInputElement>(null);
+  const descripcionRef = useRef<HTMLInputElement>(null);
+  const fechaRef = useRef<HTMLInputElement>(null);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+  function handleSubmit(event: SyntheticEvent<HTMLFormElement>): void {
     event.preventDefault();
     
-    const montoNumero = parseFloat(monto);
+    const montoVal = montoRef.current?.value || '';
+    const descVal = descripcionRef.current?.value || '';
+    const fechaVal = fechaRef.current?.value || getTodayDate();
+    
+    const montoNumero = parseFloat(montoVal);
     
     if (isNaN(montoNumero) || montoNumero <= 0) {
       return;
     }
     
     onAgregar({
-      fecha,
+      fecha: fechaVal,
       monto: montoNumero,
-      descripcion: descripcion.trim() || 'Daily income',
+      descripcion: descVal.trim() || 'Ahorro',
     });
     
     // Limpiar formulario
-    setMonto('');
-    setDescripcion('');
-    setFecha(getTodayDate());
+    if (montoRef.current) montoRef.current.value = '';
+    if (descripcionRef.current) descripcionRef.current.value = '';
   }
 
-  // Calcular total del mes
-  const totalMes = ingresosMes.reduce((sum, ingreso) => sum + ingreso.monto, 0);
+  // Filtrar últimos 5 para mostrar
+  const ultimosAhorros = ahorros.slice(0, 5);
 
   return (
     <div className="space-y-6">
-      {/* Formulario */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label 
-              htmlFor="income-amount" 
+              htmlFor="savings-amount" 
               className="block mb-2 text-sm font-medium text-gray-600"
             >
-              Monto
+              Monto a Ahorrar
             </label>
             <input
-              id="income-amount"
+              id="savings-amount"
               type="number"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
-              placeholder="e.g., 150"
+              ref={montoRef}
+              placeholder="e.g., 200"
               className="input-field"
               min="0"
               step="1"
+              defaultValue=""
             />
           </div>
           
           <div>
             <label 
-              htmlFor="income-date" 
+              htmlFor="savings-date" 
               className="block mb-2 text-sm font-medium text-gray-600"
             >
               Fecha
             </label>
             <input
-              id="income-date"
+              id="savings-date"
               type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
+              ref={fechaRef}
+              defaultValue={getTodayDate()}
               className="input-field"
             />
           </div>
@@ -85,56 +88,53 @@ export function DailyIncomeForm({ ingresosMes, onAgregar, onEliminar }: DailyInc
         
         <div>
           <label 
-            htmlFor="income-description" 
+            htmlFor="savings-description" 
             className="block mb-2 text-sm font-medium text-gray-600"
           >
             Descripción (opcional)
           </label>
           <input
-            id="income-description"
+            id="savings-description"
             type="text"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            placeholder="e.g., Uber, ventas, etc."
+            ref={descripcionRef}
+            placeholder="e.g., Para vacaciones..."
             className="input-field"
+            defaultValue=""
           />
         </div>
         
         <button 
           type="submit" 
-          className="btn-primary w-full flex items-center justify-center gap-2"
+          className="btn-primary w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700"
         >
           <Plus className="h-5 w-5" />
-          Agregar ingreso
+          Agregar Ahorro
         </button>
       </form>
       
-      {/* Historial del mes */}
-      {ingresosMes.length > 0 && (
+      {/* Historial Reciente */}
+      {ultimosAhorros.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-gray-600">Ingresos del mes</h4>
-            <span className="text-sm font-bold text-emerald-600">
-              Total: {formatCurrency(totalMes)}
-            </span>
+            <h4 className="text-sm font-medium text-gray-600">Ahorros recientes</h4>
           </div>
           
           <div className="space-y-2 max-h-48 overflow-y-auto">
-            {ingresosMes.map((ingreso) => (
+            {ultimosAhorros.map((ahorro) => (
               <div 
-                key={ingreso.id} 
+                key={ahorro.id} 
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group"
               >
                 <div>
                   <p className="text-sm font-medium text-gray-800">
-                    {formatCurrency(ingreso.monto)}
+                    {formatCurrency(ahorro.monto)}
                   </p>
                   <p className="text-xs text-gray-400">
-                    {ingreso.fecha} - {ingreso.descripcion}
+                    {ahorro.fecha} - {ahorro.descripcion}
                   </p>
                 </div>
                 <button
-                  onClick={() => ingreso.id && onEliminar(ingreso.id)}
+                  onClick={() => ahorro.id && onEliminar(ahorro.id)}
                   className="p-1.5 rounded bg-red-100 text-red-500 opacity-0 group-hover:opacity-100 
                              transition-opacity hover:bg-red-200"
                   type="button"

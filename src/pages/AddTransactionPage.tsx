@@ -1,40 +1,59 @@
 import { useState } from 'react';
-import { DollarSign, CreditCard, ArrowLeft } from 'lucide-react';
+import { DollarSign, CreditCard, ArrowLeft, PiggyBank } from 'lucide-react';
 import { Link } from 'react-router';
 import { useFinance } from '../hooks/useFinance';
 import { DebtForm } from '../components/DebtForm';
-import { DailyIncomeForm } from '../components/DailyIncomeForm';
-import { MonthlyIncomeForm } from '../components/MonthlyIncomeForm';
-import type { IngresoDiario, Deuda } from '../types';
+import { IncomeForm } from '../components/IncomeForm';
+import { SavingsForm } from '../components/SavingsForm';
+import type { Ingreso, Deuda, Ahorro } from '../types';
+import { formatCurrency } from '../utils/formatCurrency';
+import { Trash2 } from 'lucide-react';
 
 // ============================================
-// CONTENIDO DEL FORMULARIO (Se reinicia con la key)
+// COMPONENTES MEMOIZADOS (Evita re-renders del padre)
+// ============================================
+
+// Componente para mostrar lista reciente en DebtForm (ya que DebtTable es tabla completa)
+// Lo integramos aquí o lo pasamos a DebtForm. 
+// Por simplicidad, vamos a mostrar la lista de deudas recientes debajo del formulario DEBT
+// dentro del mismo DebtForm o aquí? 
+// El usuario pidió: "Feedback de que en efecto se agrego" -> Lista reciente.
+// Vamos a modificar DebtForm para que acepte la lista, igual que IncomeForm.
+
+// ============================================
+// CONTENIDO PRINCIPAL
 // ============================================
 
 interface ContentProps {
-  tipoIngreso: 'mensual' | 'diario';
-  ingresosMesActual: IngresoDiario[];
-  agregarDeuda: (d: Omit<Deuda, 'id'>) => Promise<void>;
-  agregarIngresoDiario: (i: Omit<IngresoDiario, 'id'>) => Promise<void>;
-  eliminarIngresoDiario: (id: number) => Promise<void>;
+  ingresos: Ingreso[];
+  gastos: Deuda[];
+  ahorros: Ahorro[];
+  agregarGasto: (d: Omit<Deuda, 'id'>) => Promise<void>;
+  eliminarGasto: (id: number) => Promise<void>;
+  agregarIngreso: (i: Omit<Ingreso, 'id'>) => Promise<void>;
+  eliminarIngreso: (id: number) => Promise<void>;
+  agregarAhorro: (a: Omit<Ahorro, 'id'>) => Promise<void>;
+  eliminarAhorro: (id: number) => Promise<void>;
 }
 
 function AddTransactionContent({ 
-  tipoIngreso, 
-  ingresosMesActual, 
-  agregarDeuda, 
-  agregarIngresoDiario, 
-  eliminarIngresoDiario 
+  ingresos, 
+  gastos,
+  ahorros,
+  agregarGasto, 
+  eliminarGasto,
+  agregarIngreso, 
+  eliminarIngreso,
+  agregarAhorro,
+  eliminarAhorro
 }: ContentProps) {
-  const [activeTab, setActiveTab] = useState<'income' | 'debt'>('income');
+  const [activeTab, setActiveTab] = useState<'income' | 'debt' | 'savings'>('income');
   
-  // Estado local para el toggle de tipo de ingreso
-  // Gracias al patrón de 'key' en el padre, esto se inicializa con el valor correcto de la BD
-  const [incomeType, setIncomeType] = useState<'diario' | 'mensual'>(tipoIngreso);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8 pb-24 md:pb-8">
+    <div className="min-h-dvh bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8 pb-24 md:pb-8">
       <div className="max-w-2xl mx-auto">
+        
+        {/* Header */}
         <div className="mb-6 flex items-center gap-4">
           <Link 
             to="/" 
@@ -42,16 +61,16 @@ function AddTransactionContent({
           >
             <ArrowLeft className="h-6 w-6 text-gray-600" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-800">Agregar transacción</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Agregar</h1>
         </div>
 
-        {/* Tabs Principales: Ingreso vs Deuda */}
-        <div className="flex p-1 mb-6 bg-white rounded-xl shadow-sm">
+        {/* Tabs */}
+        <div className="flex p-1 mb-6 bg-white rounded-xl shadow-sm overflow-x-auto">
           <button
             onClick={() => setActiveTab('income')}
             className={`
-              flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200
-              flex items-center justify-center gap-2
+              flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200
+              flex items-center justify-center gap-2 whitespace-nowrap
               ${activeTab === 'income' 
                 ? 'bg-emerald-50 text-emerald-600 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'}
@@ -63,80 +82,114 @@ function AddTransactionContent({
           <button
             onClick={() => setActiveTab('debt')}
             className={`
-              flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200
-              flex items-center justify-center gap-2
+              flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200
+              flex items-center justify-center gap-2 whitespace-nowrap
               ${activeTab === 'debt' 
                 ? 'bg-red-50 text-red-600 shadow-sm' 
                 : 'text-gray-500 hover:text-gray-700'}
             `}
           >
             <CreditCard className="h-4 w-4" />
-            Deuda / Gasto
+            Gasto
+          </button>
+          <button
+            onClick={() => setActiveTab('savings')}
+            className={`
+              flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200
+              flex items-center justify-center gap-2 whitespace-nowrap
+              ${activeTab === 'savings' 
+                ? 'bg-violet-50 text-violet-600 shadow-sm' 
+                : 'text-gray-500 hover:text-gray-700'}
+            `}
+          >
+            <PiggyBank className="h-4 w-4" />
+            Ahorro
           </button>
         </div>
 
-        {/* Contenido */}
+        {/* Contenido del Tab Activo */}
         <div className="bg-white rounded-2xl p-6 shadow-md">
-          {activeTab === 'income' ? (
+          {activeTab === 'income' && (
             <div>
               <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                    <DollarSign className="h-6 w-6 text-emerald-500" />
-                    Ingresos
-                  </h2>
-                  
-                  {/* Toggle Diario/Mensual dentro de Ingresos */}
-                  <div className="flex bg-gray-100 rounded-lg p-1">
-                    <button
-                      onClick={() => setIncomeType('diario')}
-                      className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        incomeType === 'diario' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-500'
-                      }`}
-                    >
-                      Diario
-                    </button>
-                    <button
-                      onClick={() => setIncomeType('mensual')}
-                      className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        incomeType === 'mensual' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-500'
-                      }`}
-                    >
-                      Mensual
-                    </button>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-gray-500">
-                  {incomeType === 'diario' 
-                    ? 'Registra tus ingresos de hoy.' 
-                    : 'Configura tu salario mensual fijo.'}
+                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                  <DollarSign className="h-6 w-6 text-emerald-500" />
+                  Ingresos
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Registra dinero que entra.
                 </p>
               </div>
 
-              {incomeType === 'diario' ? (
-                <DailyIncomeForm
-                  ingresosMes={ingresosMesActual}
-                  onAgregar={agregarIngresoDiario}
-                  onEliminar={eliminarIngresoDiario}
-                />
-              ) : (
-                <MonthlyIncomeForm />
-              )}
+              <IncomeForm
+                ingresos={ingresos}
+                onAgregar={agregarIngreso}
+                onEliminar={eliminarIngreso}
+              />
             </div>
-          ) : (
+          )}
+
+          {activeTab === 'debt' && (
             <div>
               <div className="mb-6">
                 <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                   <CreditCard className="h-6 w-6 text-red-500" />
-                  Deuda / Gasto
+                  Gastos
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  Agrega una nueva deuda o gasto recurrente.
+                  Registra dinero que sale (compras, facturas, etc).
                 </p>
               </div>
-              <DebtForm onAgregar={agregarDeuda} />
+              
+              <DebtForm onAgregar={agregarGasto} />
+              
+              {/* Lista Reciente de Gastos (Manual aquí ya que DebtForm no tenía lista) */}
+              {gastos.length > 0 && (
+                <div className="mt-8 border-t border-gray-100 pt-6">
+                   <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-gray-600">Gastos recientes</h4>
+                   </div>
+                   <div className="space-y-2 max-h-48 overflow-y-auto">
+                     {gastos.slice(0, 5).map((gasto) => (
+                       <div key={gasto.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg group">
+                         <div>
+                            <p className="text-sm font-medium text-gray-800">{formatCurrency(gasto.monto)}</p>
+                            <p className="text-xs text-gray-400">{gasto.fecha} - {gasto.nombre}</p>
+                         </div>
+                         <button
+                           onClick={() => gasto.id && eliminarGasto(gasto.id)}
+                           className="p-1.5 rounded bg-red-100 text-red-500 opacity-0 group-hover:opacity-100 
+                                      transition-opacity hover:bg-red-200"
+                           type="button"
+                         >
+                           <Trash2 className="h-3 w-3" />
+                         </button>
+                       </div>
+                     ))}
+                   </div>
+                </div>
+              )}
             </div>
+          )}
+
+          {activeTab === 'savings' && (
+             <div>
+               <div className="mb-6">
+                 <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                   <PiggyBank className="h-6 w-6 text-violet-500" />
+                   Ahorros
+                 </h2>
+                 <p className="text-sm text-gray-500 mt-1">
+                   Mueve dinero a tus fondos de ahorro.
+                 </p>
+               </div>
+               
+               <SavingsForm 
+                 ahorros={ahorros} 
+                 onAgregar={agregarAhorro} 
+                 onEliminar={eliminarAhorro}
+               />
+             </div>
           )}
         </div>
       </div>
@@ -145,14 +198,13 @@ function AddTransactionContent({
 }
 
 // ============================================
-// PÁGINA CONTENEDOR (Controla la sincronización)
+// PÁGINA CONTENEDOR
 // ============================================
 
 function AddTransactionPage() {
   const finance = useFinance();
   
-  // Usamos el ID de la configuración como key. 
-  // Cuando la base de datos carga, el ID cambia y el formulario se reinicia con los valores correctos.
+  // Usamos el ID de la configuración como key.
   const renderKey = finance.configuracion?.id ? `ready-${finance.configuracion.id}` : 'initial';
 
   return <AddTransactionContent key={renderKey} {...finance} />;

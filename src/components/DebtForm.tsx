@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useRef } from 'react';
+import type { SyntheticEvent } from 'react';
 import { Plus } from 'lucide-react';
 import type { Deuda } from '../types';
+import { getTodayDate } from '../utils/formatCurrency';
 
 // ============================================
-// COMPONENTE FORMULARIO DE DEUDAS
+// COMPONENTE FORMULARIO DE DEUDAS / GASTOS
 // ============================================
 
 interface DebtFormProps {
@@ -11,18 +13,22 @@ interface DebtFormProps {
 }
 
 export function DebtForm({ onAgregar }: DebtFormProps) {
-  const [nombre, setNombre] = useState('');
-  const [monto, setMonto] = useState('');
-  const [diaPago, setDiaPago] = useState('');
+  const nombreRef = useRef<HTMLInputElement>(null);
+  const montoRef = useRef<HTMLInputElement>(null);
+  const fechaRef = useRef<HTMLInputElement>(null);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
+  function handleSubmit(event: SyntheticEvent<HTMLFormElement>): void {
     event.preventDefault();
     
-    // Validar campos
-    const montoNumero = parseFloat(monto);
-    const diaNumero = parseInt(diaPago, 10);
+    // Obtener valores actuales
+    const nombreVal = nombreRef.current?.value || '';
+    const montoVal = montoRef.current?.value || '';
+    const fechaVal = fechaRef.current?.value || getTodayDate();
     
-    if (!nombre.trim()) {
+    // Validar campos
+    const montoNumero = parseFloat(montoVal);
+    
+    if (!nombreVal.trim()) {
       return;
     }
     
@@ -30,21 +36,17 @@ export function DebtForm({ onAgregar }: DebtFormProps) {
       return;
     }
     
-    if (isNaN(diaNumero) || diaNumero < 1 || diaNumero > 31) {
-      return;
-    }
-    
-    // Agregar deuda
+    // Agregar deuda/gasto
     onAgregar({
-      nombre: nombre.trim(),
+      nombre: nombreVal.trim(),
       monto: montoNumero,
-      diaPago: diaNumero,
+      fecha: fechaVal,
     });
     
     // Limpiar formulario
-    setNombre('');
-    setMonto('');
-    setDiaPago('');
+    if (nombreRef.current) nombreRef.current.value = '';
+    if (montoRef.current) montoRef.current.value = '';
+    // No reseteamos fecha
   }
 
   return (
@@ -55,55 +57,52 @@ export function DebtForm({ onAgregar }: DebtFormProps) {
           htmlFor="debt-name" 
           className="block mb-2 text-sm font-medium text-gray-600"
         >
-          Nombre de la deuda
+          Nombre del gasto / deuda
         </label>
         <input
           id="debt-name"
           type="text"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          placeholder="e.g., Tarjeta de credito"
+          ref={nombreRef}
+          placeholder="e.g., Compras, Renta, Tarjeta..."
           className="input-field"
+          defaultValue=""
         />
       </div>
       
-      {/* Monto y día de pago */}
+      {/* Monto y Fecha */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label 
             htmlFor="debt-amount" 
             className="block mb-2 text-sm font-medium text-gray-600"
           >
-            Monto mensual
+            Monto
           </label>
           <input
             id="debt-amount"
             type="number"
-            value={monto}
-            onChange={(e) => setMonto(e.target.value)}
+            ref={montoRef}
             placeholder="e.g., 500"
             className="input-field"
             min="0"
             step="10"
+            defaultValue=""
           />
         </div>
         
         <div>
           <label 
-            htmlFor="debt-day" 
+            htmlFor="debt-date" 
             className="block mb-2 text-sm font-medium text-gray-600"
           >
-            Dia de pago
+            Fecha
           </label>
           <input
-            id="debt-day"
-            type="number"
-            value={diaPago}
-            onChange={(e) => setDiaPago(e.target.value)}
-            placeholder="1-31"
+            id="debt-date"
+            type="date"
+            ref={fechaRef}
+            defaultValue={getTodayDate()}
             className="input-field"
-            min="1"
-            max="31"
           />
         </div>
       </div>
@@ -114,7 +113,7 @@ export function DebtForm({ onAgregar }: DebtFormProps) {
         className="btn-primary w-full flex items-center justify-center gap-2"
       >
         <Plus className="h-5 w-5" />
-        Agregar deuda
+        Agregar gasto
       </button>
     </form>
   );

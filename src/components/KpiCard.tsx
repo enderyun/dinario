@@ -19,7 +19,8 @@ export function KpiCard({ title, value, subtitle, variant, icon }: KpiCardProps)
   const variantClasses: Record<KpiVariant, string> = {
     income: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
     expense: 'bg-gradient-to-br from-red-500 to-red-600',
-    available: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
+    available: 'bg-gradient-to-br from-blue-500 to-blue-600', // Net Income (Blue)
+    savings: 'bg-gradient-to-br from-violet-500 to-violet-600', // Savings (Purple)
   };
 
   return (

@@ -1,13 +1,15 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, DEFAULT_CONFIGURACION } from '../db';
 import { getCurrentMonthRange } from '../utils/formatCurrency';
-import type { Configuracion, IngresoDiario, Deuda } from '../types';
+import type { Configuracion, Ingreso, Deuda, Ahorro } from '../types';
 
 // ============================================
 // HOOK PRINCIPAL DE FINANZAS
 // ============================================
 
 export function useFinance() {
+  const { startDate, endDate } = getCurrentMonthRange();
+
   // ----------------------------------------
   // OBTENER DATOS DE LA BASE DE DATOS
   // ----------------------------------------
@@ -16,50 +18,77 @@ export function useFinance() {
     () => db.configuracion.toCollection().first()
   );
   
-  const deudas = useLiveQuery(
-    () => db.deudas.toArray()
-  ) ?? [];
-  
   // Ingresos del mes actual
-  const { startDate, endDate } = getCurrentMonthRange();
-  const ingresosMesActual = useLiveQuery(
-    () => db.ingresosDiarios
+  const ingresos = useLiveQuery(
+    () => db.ingresos
       .where('fecha')
       .between(startDate, endDate, true, true)
+      .reverse() // Mostrar más recientes primero
       .toArray()
   ) ?? [];
 
+  // Gastos/Deudas del mes actual
+  const gastos = useLiveQuery(
+    () => db.deudas
+      .where('fecha')
+      .between(startDate, endDate, true, true)
+      .reverse() // Mostrar más recientes primero
+      .toArray()
+  ) ?? [];
+
+  // Ahorros (Total acumulado histórico o del mes? El usuario dijo "ahorros totales", pero si descontamos del neto...)
+  // Si descontamos del Ingreso Neto (que es mensual), ¿deberíamos descontar solo los ahorros hechos ESTE MES?
+  // User: "del ingreso neto, pasar dinero restante a esta nueva sección" -> movimiento de flujo.
+  // Interpretación: 
+  // - Neto Mensual = Bruto Mensual - Gastos Mensuales - Ahorros Mensuales.
+  // - Ahorros Totales = Suma de todos los ahorros históricos.
+  // Vamos a filtrar ahorros del mes para el cálculo de Neto, y traer todos para el Total.
+  
+  const todosLosAhorros = useLiveQuery(
+    () => db.ahorros
+      .orderBy('fecha')
+      .reverse()
+      .toArray()
+  ) ?? [];
+
+  const ahorrosMesActual = todosLosAhorros.filter(a => 
+    a.fecha >= startDate && a.fecha <= endDate
+  );
+  
   // ----------------------------------------
   // VALORES CALCULADOS
   // ----------------------------------------
   
-  const tipoIngreso = configuracion?.tipoIngreso ?? 'mensual';
-  const salarioMensual = configuracion?.salarioMensual ?? 0;
   const tasaImpuestos = configuracion?.tasaImpuestos ?? DEFAULT_CONFIGURACION.tasaImpuestos;
   
-  // Calcular ingreso bruto mensual
-  let ingresoBrutoMensual: number;
-  if (tipoIngreso === 'mensual') {
-    ingresoBrutoMensual = salarioMensual;
-  } else {
-    // Sumar todos los ingresos del mes
-    ingresoBrutoMensual = ingresosMesActual.reduce(
-      (total, ingreso) => total + ingreso.monto, 
-      0
-    );
-  }
-  
-  // Calcular ingreso neto (después de impuestos)
-  const ingresoNeto = ingresoBrutoMensual * (1 - tasaImpuestos);
-  
-  // Calcular total de deudas/gastos fijos
-  const totalDeudas = deudas.reduce(
-    (total, deuda) => total + deuda.monto, 
+  // 1. Ingreso Bruto (Suma de ingresos del mes)
+  const ingresoBruto = ingresos.reduce(
+    (total, ingreso) => total + ingreso.monto, 
+    0
+  );
+
+  // 2. Total Gastos (Suma de deudas/gastos del mes)
+  const totalGastos = gastos.reduce(
+    (total, gasto) => total + gasto.monto, 
+    0
+  );
+
+  // 3. Ahorros del Mes
+  const totalAhorrosMes = ahorrosMesActual.reduce(
+    (total, ahorro) => total + ahorro.monto,
     0
   );
   
-  // Calcular dinero disponible
-  const disponible = ingresoNeto - totalDeudas;
+  // 4. Ingreso Neto (Bruto - Gastos - Ahorros del Mes)
+  // El usuario pidió que el ahorro se descuente del ingreso neto. 
+  // Asumimos que "Ingreso Neto" aquí funciona como "Disponible Real".
+  const ingresoNeto = ingresoBruto - totalGastos - totalAhorrosMes;
+  
+  // 5. Total Ahorros (Acumulado Histórico)
+  const totalAhorros = todosLosAhorros.reduce(
+    (total, ahorro) => total + ahorro.monto,
+    0
+  );
 
   // ----------------------------------------
   // FUNCIONES PARA MODIFICAR DATOS
@@ -67,7 +96,6 @@ export function useFinance() {
   
   async function guardarConfiguracion(data: Omit<Configuracion, 'id'>): Promise<void> {
     const existente = await db.configuracion.toCollection().first();
-    
     if (existente?.id) {
       await db.configuracion.update(existente.id, data);
     } else {
@@ -75,26 +103,35 @@ export function useFinance() {
     }
   }
   
-  async function agregarIngresoDiario(ingreso: Omit<IngresoDiario, 'id'>): Promise<void> {
-    await db.ingresosDiarios.add(ingreso);
+  async function agregarIngreso(ingreso: Omit<Ingreso, 'id'>): Promise<void> {
+    await db.ingresos.add(ingreso);
   }
   
-  async function eliminarIngresoDiario(id: number): Promise<void> {
-    await db.ingresosDiarios.delete(id);
+  async function eliminarIngreso(id: number): Promise<void> {
+    await db.ingresos.delete(id);
   }
   
-  async function agregarDeuda(deuda: Omit<Deuda, 'id'>): Promise<void> {
-    await db.deudas.add(deuda);
+  async function agregarGasto(gasto: Omit<Deuda, 'id'>): Promise<void> {
+    await db.deudas.add(gasto);
   }
   
-  async function eliminarDeuda(id: number): Promise<void> {
+  async function eliminarGasto(id: number): Promise<void> {
     await db.deudas.delete(id);
+  }
+
+  async function agregarAhorro(ahorro: Omit<Ahorro, 'id'>): Promise<void> {
+    await db.ahorros.add(ahorro);
+  }
+
+  async function eliminarAhorro(id: number): Promise<void> {
+    await db.ahorros.delete(id);
   }
   
   async function resetearDatos(): Promise<void> {
     await db.configuracion.clear();
-    await db.ingresosDiarios.clear();
+    await db.ingresos.clear();
     await db.deudas.clear();
+    await db.ahorros.clear();
   }
 
   // ----------------------------------------
@@ -104,24 +141,25 @@ export function useFinance() {
   return {
     // Datos crudos
     configuracion,
-    deudas,
-    ingresosMesActual,
+    ingresos, // Ya vienen ordenados por fecha desc
+    gastos,   // Ya vienen ordenados por fecha desc
+    ahorros: todosLosAhorros, // Todos los ahorros para historial
     
     // Valores calculados
-    tipoIngreso,
-    salarioMensual,
     tasaImpuestos,
-    ingresoBrutoMensual,
+    ingresoBruto,
+    totalGastos,
     ingresoNeto,
-    totalDeudas,
-    disponible,
+    totalAhorros,
     
     // Funciones
     guardarConfiguracion,
-    agregarIngresoDiario,
-    eliminarIngresoDiario,
-    agregarDeuda,
-    eliminarDeuda,
+    agregarIngreso,
+    eliminarIngreso,
+    agregarGasto,
+    eliminarGasto,
+    agregarAhorro,
+    eliminarAhorro,
     resetearDatos,
   };
 }

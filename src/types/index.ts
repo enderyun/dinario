@@ -7,15 +7,13 @@
  */
 export interface Configuracion {
   id?: number;
-  tipoIngreso: 'mensual' | 'diario';
-  salarioMensual: number;
   tasaImpuestos: number; // Ej: 0.15 para 15%
 }
 
 /**
- * Ingreso diario (cuando tipoIngreso = 'diario')
+ * Ingreso (Transacción puntual)
  */
-export interface IngresoDiario {
+export interface Ingreso {
   id?: number;
   fecha: string; // Formato: YYYY-MM-DD
   monto: number;
@@ -23,16 +21,26 @@ export interface IngresoDiario {
 }
 
 /**
- * Deuda o gasto fijo mensual
+ * Deuda o gasto (Transacción puntual)
  */
 export interface Deuda {
   id?: number;
   nombre: string;
   monto: number;
-  diaPago: number;
+  fecha: string; // Formato: YYYY-MM-DD
+}
+
+/**
+ * Ahorro
+ */
+export interface Ahorro {
+  id?: number;
+  fecha: string;
+  monto: number;
+  descripcion: string;
 }
 
 /**
  * Variantes para las KPI Cards
  */
-export type KpiVariant = 'income' | 'expense' | 'available';
+export type KpiVariant = 'income' | 'expense' | 'available' | 'savings';

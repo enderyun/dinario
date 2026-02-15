@@ -11,7 +11,7 @@ export function useSettingsForm() {
   
   const [guardado, setGuardado] = useState(false);
 
-  const handleSave = async (e?: React.FormEvent, overrides?: Partial<Configuracion>) => {
+  const handleSave = async (e?: SubmitEvent, overrides?: Partial<Configuracion>) => {
     if (e) e.preventDefault();
     
     const impuestosNumero = parseFloat(tasaImpuestos) || 0;
